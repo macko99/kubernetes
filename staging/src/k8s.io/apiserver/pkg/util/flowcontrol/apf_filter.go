@@ -220,7 +220,7 @@ func (cfgCtlr *configController) Handle(ctx context.Context, requestDigest Reque
 		requestDigest.RequestInfo.Namespace == "default" &&
 		requestDigest.RequestInfo.Resource == "pods" &&
 		requestDigest.RequestInfo.Subresource == "binding" &&
-		// that was breaking other name of application than 'empty'
+		// that was breaking other name of application than empty
 		strings.Contains(requestDigest.RequestInfo.Name, "empty") &&
 		requestDigest.User.GetName() == "system:kube-scheduler" {
 		// Scheduler creates the binding from pod to node
