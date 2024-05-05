@@ -38,14 +38,18 @@ import (
 	netutils "k8s.io/utils/net"
 )
 
+// MKB1: lookHere
 // createPodSandbox creates a pod sandbox and returns (podSandBoxID, message, error).
 func (m *kubeGenericRuntimeManager) createPodSandbox(ctx context.Context, pod *v1.Pod, attempt uint32) (string, string, error) {
+	klog.Infof("%s [CONTINUUM] 0631 createPodSandbox:start pod=%s", time.Now().UnixNano(), klog.KObj(pod))
+
 	podSandboxConfig, err := m.generatePodSandboxConfig(pod, attempt)
 	if err != nil {
 		message := fmt.Sprintf("Failed to generate sandbox config for pod %q: %v", format.Pod(pod), err)
 		klog.ErrorS(err, "Failed to generate sandbox config for pod", "pod", klog.KObj(pod))
 		return "", message, err
 	}
+	klog.Infof("%s [CONTINUUM] 0632 createPodSandbox:generatePodSandboxConfig:done pod=%s", time.Now().UnixNano(), klog.KObj(pod))
 
 	// Create pod logs directory
 	err = m.osInterface.MkdirAll(podSandboxConfig.LogDirectory, 0755)
@@ -54,6 +58,7 @@ func (m *kubeGenericRuntimeManager) createPodSandbox(ctx context.Context, pod *v
 		klog.ErrorS(err, "Failed to create log directory for pod", "pod", klog.KObj(pod))
 		return "", message, err
 	}
+	klog.Infof("%s [CONTINUUM] 0633 createPodSandbox:MkdirAll:done pod=%s", time.Now().UnixNano(), klog.KObj(pod))
 
 	runtimeHandler := ""
 	if m.runtimeClassManager != nil {
@@ -66,6 +71,7 @@ func (m *kubeGenericRuntimeManager) createPodSandbox(ctx context.Context, pod *v
 			klog.V(2).InfoS("Running pod with runtime handler", "pod", klog.KObj(pod), "runtimeHandler", runtimeHandler)
 		}
 	}
+	klog.Infof("%s [CONTINUUM] 0634 createPodSandbox:LookupRuntimeHandler:done runtimeHandler=%s pod=%s", time.Now().UnixNano(), runtimeHandler, klog.KObj(pod))
 
 	podSandBoxID, err := m.runtimeService.RunPodSandbox(ctx, podSandboxConfig, runtimeHandler)
 	if err != nil {
@@ -73,6 +79,7 @@ func (m *kubeGenericRuntimeManager) createPodSandbox(ctx context.Context, pod *v
 		klog.ErrorS(err, "Failed to create sandbox for pod", "pod", klog.KObj(pod))
 		return "", message, err
 	}
+	klog.Infof("%s [CONTINUUM] 0635 createPodSandbox:RunPodSandbox:done pod=%s", time.Now().UnixNano(), klog.KObj(pod))
 
 	return podSandBoxID, "", nil
 }

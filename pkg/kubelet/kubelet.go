@@ -1670,6 +1670,7 @@ func (kl *Kubelet) SyncPod(_ context.Context, updateType kubetypes.SyncPodType, 
 	}()
 
 	klog.Infof("%s [CONTINUUM] 0500 Kubelet starts processing pod pod=%s", time.Now().UnixNano(), klog.KObj(pod))
+	klog.Infof("%s [CONTINUUM] 0601 SyncPod:start pod=%s", time.Now().UnixNano(), klog.KObj(pod))
 
 	// Latency measurements for the main workflow are relative to the
 	// first time the pod was seen by kubelet.
@@ -1836,6 +1837,7 @@ func (kl *Kubelet) SyncPod(_ context.Context, updateType kubetypes.SyncPodType, 
 			}
 		}
 	}
+	klog.Infof("%s [CONTINUUM] 0602 SyncPod:cgroups:done pod=%s", time.Now().UnixNano(), klog.KObj(pod))
 
 	// Create Mirror Pod for Static Pod if it doesn't already exist
 	klog.Infof("%s [CONTINUUM] 0503 Make mirror pod pod=%s", time.Now().UnixNano(), klog.KObj(pod))
@@ -1868,6 +1870,7 @@ func (kl *Kubelet) SyncPod(_ context.Context, updateType kubetypes.SyncPodType, 
 			}
 		}
 	}
+	klog.Infof("%s [CONTINUUM] 0603 SyncPod:CreateMirrorPod:done pod=%s", time.Now().UnixNano(), klog.KObj(pod))
 
 	// Make data directories for the pod
 	klog.Infof("%s [CONTINUUM] 0504 Make data directories pod=%s", time.Now().UnixNano(), klog.KObj(pod))
@@ -1876,6 +1879,7 @@ func (kl *Kubelet) SyncPod(_ context.Context, updateType kubetypes.SyncPodType, 
 		klog.ErrorS(err, "Unable to make pod data directories for pod", "pod", klog.KObj(pod))
 		return false, err
 	}
+	klog.Infof("%s [CONTINUUM] 0604 SyncPod:makePodDataDirs:done pod=%s", time.Now().UnixNano(), klog.KObj(pod))
 
 	klog.Infof("%s [CONTINUUM] 0555 Mount volumes pod=%s", time.Now().UnixNano(), klog.KObj(pod))
 
@@ -1890,6 +1894,7 @@ func (kl *Kubelet) SyncPod(_ context.Context, updateType kubetypes.SyncPodType, 
 			return false, err
 		}
 	}
+	klog.Infof("%s [CONTINUUM] 0605 SyncPod:WaitForAttachAndMount:done pod=%s", time.Now().UnixNano(), klog.KObj(pod))
 
 	klog.Infof("%s [CONTINUUM] 0560 Pull secrets and probe pod=%s", time.Now().UnixNano(), klog.KObj(pod))
 
@@ -1934,6 +1939,8 @@ func (kl *Kubelet) SyncPod(_ context.Context, updateType kubetypes.SyncPodType, 
 			return false, err
 		}
 	}
+
+	klog.Infof("%s [CONTINUUM] 0606 SyncPod:done pod=%s", time.Now().UnixNano(), klog.KObj(pod))
 
 	klog.Infof("%s [CONTINUUM] 0523 Pod is done pod=%s", time.Now().UnixNano(), klog.KObj(pod))
 	return false, nil

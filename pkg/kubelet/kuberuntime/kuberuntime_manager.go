@@ -1009,6 +1009,8 @@ func (m *kubeGenericRuntimeManager) computePodActions(ctx context.Context, pod *
 //  7. Resize running containers (if InPlacePodVerticalScaling==true)
 //  8. Create normal containers.
 func (m *kubeGenericRuntimeManager) SyncPod(ctx context.Context, pod *v1.Pod, podStatus *kubecontainer.PodStatus, pullSecrets []v1.Secret, backOff *flowcontrol.Backoff) (result kubecontainer.PodSyncResult) {
+	klog.Infof("%s [CONTINUUM] 0611 SyncPod:start pod=%s", time.Now().UnixNano(), klog.KObj(pod))
+
 	// Step 1: Compute sandbox and container changes.
 	podContainerChanges := m.computePodActions(ctx, pod, podStatus)
 	klog.V(3).InfoS("computePodActions got for pod", "podActions", podContainerChanges, "pod", klog.KObj(pod))
@@ -1155,6 +1157,7 @@ func (m *kubeGenericRuntimeManager) SyncPod(ctx context.Context, pod *v1.Pod, po
 			klog.V(4).InfoS("Determined the ip for pod after sandbox changed", "IPs", podIPs, "pod", klog.KObj(pod))
 		}
 	}
+	klog.Infof("%s [CONTINUUM] 0612 SyncPod:CreateSandbox:done pod=%s", time.Now().UnixNano(), klog.KObj(pod))
 
 	// the start containers routines depend on pod ip(as in primary pod ip)
 	// instead of trying to figure out if we have 0 < len(podIPs)
@@ -1175,6 +1178,7 @@ func (m *kubeGenericRuntimeManager) SyncPod(ctx context.Context, pod *v1.Pod, po
 		configPodSandboxResult.Fail(kubecontainer.ErrConfigPodSandbox, message)
 		return
 	}
+	klog.Infof("%s [CONTINUUM] 0613 SyncPod:generatePodSandboxConfig:done pod=%s", time.Now().UnixNano(), klog.KObj(pod))
 
 	// Helper containing boilerplate common to starting all types of containers.
 	// typeName is a description used to describe this type of container in log messages,
@@ -1256,6 +1260,7 @@ func (m *kubeGenericRuntimeManager) SyncPod(ctx context.Context, pod *v1.Pod, po
 		start(ctx, "container", metrics.Container, containerStartSpec(&pod.Spec.Containers[idx]))
 	}
 
+	klog.Infof("%s [CONTINUUM] 0614 SyncPod:done pod=%s", time.Now().UnixNano(), klog.KObj(pod))
 	return
 }
 

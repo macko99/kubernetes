@@ -175,6 +175,7 @@ func calcRestartCountByLogDir(path string) (int, error) {
 // * run the post start lifecycle hooks (if applicable)
 func (m *kubeGenericRuntimeManager) startContainer(ctx context.Context, podSandboxID string, podSandboxConfig *runtimeapi.PodSandboxConfig, spec *startSpec, pod *v1.Pod, podStatus *kubecontainer.PodStatus, pullSecrets []v1.Secret, podIP string, podIPs []string) (string, error) {
 	container := spec.container
+	klog.Infof("%s [CONTINUUM] 0641 startContainer:start pod=%s container=%s", time.Now().UnixNano(), klog.KObj(pod), container.Name)
 
 	// Step 1: pull the image.
 	klog.Infof("%s [CONTINUUM] 0515 Pull image pod=%s container=%s", time.Now().UnixNano(), klog.KObj(pod), container.Name)
@@ -184,6 +185,7 @@ func (m *kubeGenericRuntimeManager) startContainer(ctx context.Context, podSandb
 		m.recordContainerEvent(pod, container, "", v1.EventTypeWarning, events.FailedToCreateContainer, "Error: %v", s.Message())
 		return msg, err
 	}
+	klog.Infof("%s [CONTINUUM] 0642 startContainer:EnsureImageExists:done pod=%s container=%s", time.Now().UnixNano(), klog.KObj(pod), container.Name)
 
 	// Step 2: create the container.
 	// For a new container, the RestartCount should be 0
@@ -227,6 +229,7 @@ func (m *kubeGenericRuntimeManager) startContainer(ctx context.Context, podSandb
 		m.recordContainerEvent(pod, container, "", v1.EventTypeWarning, events.FailedToCreateContainer, "Error: %v", s.Message())
 		return s.Message(), ErrCreateContainerConfig
 	}
+	klog.Infof("%s [CONTINUUM] 0643 startContainer:generateContainerConfig:done pod=%s container=%s", time.Now().UnixNano(), klog.KObj(pod), container.Name)
 
 	err = m.internalLifecycle.PreCreateContainer(pod, container, containerConfig)
 	if err != nil {
@@ -234,6 +237,7 @@ func (m *kubeGenericRuntimeManager) startContainer(ctx context.Context, podSandb
 		m.recordContainerEvent(pod, container, "", v1.EventTypeWarning, events.FailedToCreateContainer, "Internal PreCreateContainer hook failed: %v", s.Message())
 		return s.Message(), ErrPreCreateHook
 	}
+	klog.Infof("%s [CONTINUUM] 0644 startContainer:PreCreateContainer:done pod=%s container=%s", time.Now().UnixNano(), klog.KObj(pod), container.Name)
 
 	containerID, err := m.runtimeService.CreateContainer(ctx, podSandboxID, containerConfig, podSandboxConfig)
 	if err != nil {
@@ -241,6 +245,8 @@ func (m *kubeGenericRuntimeManager) startContainer(ctx context.Context, podSandb
 		m.recordContainerEvent(pod, container, containerID, v1.EventTypeWarning, events.FailedToCreateContainer, "Error: %v", s.Message())
 		return s.Message(), ErrCreateContainer
 	}
+	klog.Infof("%s [CONTINUUM] 0645 startContainer:CreateContainer:done pod=%s container=%s", time.Now().UnixNano(), klog.KObj(pod), container.Name)
+
 	err = m.internalLifecycle.PreStartContainer(pod, container, containerID)
 	if err != nil {
 		s, _ := grpcstatus.FromError(err)
@@ -248,6 +254,8 @@ func (m *kubeGenericRuntimeManager) startContainer(ctx context.Context, podSandb
 		return s.Message(), ErrPreStartHook
 	}
 	m.recordContainerEvent(pod, container, containerID, v1.EventTypeNormal, events.CreatedContainer, fmt.Sprintf("Created container %s", container.Name))
+
+	klog.Infof("%s [CONTINUUM] 0646 startContainer:PreStartContainer:done pod=%s container=%s", time.Now().UnixNano(), klog.KObj(pod), container.Name)
 
 	// Step 3: start the container.
 	klog.Infof("%s [CONTINUUM] 0517 Start container pod=%s container=%s", time.Now().UnixNano(), klog.KObj(pod), container.Name)
@@ -258,6 +266,7 @@ func (m *kubeGenericRuntimeManager) startContainer(ctx context.Context, podSandb
 		return s.Message(), kubecontainer.ErrRunContainer
 	}
 	m.recordContainerEvent(pod, container, containerID, v1.EventTypeNormal, events.StartedContainer, fmt.Sprintf("Started container %s", container.Name))
+	klog.Infof("%s [CONTINUUM] 0647 startContainer:StartContainer:done pod=%s container=%s", time.Now().UnixNano(), klog.KObj(pod), container.Name)
 
 	// Symlink container logs to the legacy container log location for cluster logging
 	// support.
@@ -299,6 +308,7 @@ func (m *kubeGenericRuntimeManager) startContainer(ctx context.Context, podSandb
 		}
 	}
 
+	klog.Infof("%s [CONTINUUM] 0648 startContainer:done pod=%s container=%s", time.Now().UnixNano(), klog.KObj(pod), container.Name)
 	return "", nil
 }
 
