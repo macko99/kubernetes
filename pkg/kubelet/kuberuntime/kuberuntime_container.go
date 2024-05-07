@@ -250,7 +250,7 @@ func (m *kubeGenericRuntimeManager) startContainer(ctx context.Context, podSandb
 		m.recordContainerEvent(pod, container, containerID, v1.EventTypeWarning, events.FailedToCreateContainer, "Error: %v", s.Message())
 		return s.Message(), ErrCreateContainer
 	}
-	klog.Infof("%s [CONTINUUM] 0645 startContainer:CreateContainer:done pod=%s container=%s", time.Now().UnixNano(), klog.KObj(pod), container.Name)
+	klog.Infof("%s [CONTINUUM] 0645 startContainer:CreateContainer:done pod=%s container=%s id=%s", time.Now().UnixNano(), klog.KObj(pod), container.Name, containerID)
 
 	err = m.internalLifecycle.PreStartContainer(pod, container, containerID)
 	if err != nil {
