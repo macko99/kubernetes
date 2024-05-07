@@ -239,6 +239,11 @@ func (m *kubeGenericRuntimeManager) startContainer(ctx context.Context, podSandb
 	}
 	klog.Infof("%s [CONTINUUM] 0644 startContainer:PreCreateContainer:done pod=%s container=%s", time.Now().UnixNano(), klog.KObj(pod), container.Name)
 
+	conConfStr := fmt.Sprintf("%+v", containerConfig)
+	podConfStr := fmt.Sprintf("%+v", podSandboxConfig)
+	runtimezStr := fmt.Sprintf("%+v", m.runtimeService)
+	klog.Infof("%s [CONTINUUM] 0702 runtimeService.CreateContainer:start runtimeHandler=%s containerConfig=%s podSandboxConfig=%s pod=%s", time.Now().UnixNano(), runtimezStr, conConfStr, podConfStr, klog.KObj(pod))
+
 	containerID, err := m.runtimeService.CreateContainer(ctx, podSandboxID, containerConfig, podSandboxConfig)
 	if err != nil {
 		s, _ := grpcstatus.FromError(err)

@@ -71,7 +71,10 @@ func (m *kubeGenericRuntimeManager) createPodSandbox(ctx context.Context, pod *v
 			klog.V(2).InfoS("Running pod with runtime handler", "pod", klog.KObj(pod), "runtimeHandler", runtimeHandler)
 		}
 	}
-	klog.Infof("%s [CONTINUUM] 0634 createPodSandbox:LookupRuntimeHandler:done runtimeHandler=%s pod=%s", time.Now().UnixNano(), runtimeHandler, klog.KObj(pod))
+	klog.Infof("%s [CONTINUUM] 0634 createPodSandbox:LookupRuntimeHandler:done pod=%s", time.Now().UnixNano(), klog.KObj(pod))
+
+	podConfStr := fmt.Sprintf("%+v", podSandboxConfig)
+	klog.Infof("%s [CONTINUUM] 0701 runtimeService.RunPodSandbox:start runtimeHandler=%s podSandboxConfig=%s pod=%s", time.Now().UnixNano(), runtimeHandler, podConfStr, klog.KObj(pod))
 
 	podSandBoxID, err := m.runtimeService.RunPodSandbox(ctx, podSandboxConfig, runtimeHandler)
 	if err != nil {
