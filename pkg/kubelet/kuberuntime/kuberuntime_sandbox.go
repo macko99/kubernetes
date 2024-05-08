@@ -82,7 +82,7 @@ func (m *kubeGenericRuntimeManager) createPodSandbox(ctx context.Context, pod *v
 		klog.ErrorS(err, "Failed to create sandbox for pod", "pod", klog.KObj(pod))
 		return "", message, err
 	}
-	klog.Infof("%s [CONTINUUM] 0635 createPodSandbox:RunPodSandbox:done pod=%s", time.Now().UnixNano(), klog.KObj(pod))
+	klog.Infof("%s [CONTINUUM] 0635 createPodSandbox:RunPodSandbox:done pod=%s sandbox=%s", time.Now().UnixNano(), klog.KObj(pod), podSandBoxID)
 
 	return podSandBoxID, "", nil
 }
