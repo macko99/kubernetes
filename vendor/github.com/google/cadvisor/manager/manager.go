@@ -904,6 +904,7 @@ func (m *manager) createContainerLocked(containerName string, watchSource watche
 	namespacedName := namespacedContainerName{
 		Name: containerName,
 	}
+	klog.Infof("%s [CONTINUUM] 0651 manager:createContainerLocked:start container=%s", time.Now().UnixNano(), containerName)
 
 	// Check that the container didn't already exist.
 	if _, ok := m.containers[namespacedName]; ok {
@@ -989,6 +990,7 @@ func (m *manager) createContainerLocked(containerName string, watchSource watche
 	if err != nil {
 		return err
 	}
+	klog.Infof("%s [CONTINUUM] 0652 manager:createContainerLocked:done container=%s", time.Now().UnixNano(), containerName)
 	// Start the container's housekeeping.
 	return cont.Start()
 }

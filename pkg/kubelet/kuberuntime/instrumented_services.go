@@ -22,6 +22,7 @@ import (
 
 	internalapi "k8s.io/cri-api/pkg/apis"
 	runtimeapi "k8s.io/cri-api/pkg/apis/runtime/v1"
+	"k8s.io/klog/v2"
 	"k8s.io/kubernetes/pkg/kubelet/metrics"
 )
 
@@ -178,6 +179,7 @@ func (in instrumentedRuntimeService) Attach(ctx context.Context, req *runtimeapi
 }
 
 func (in instrumentedRuntimeService) RunPodSandbox(ctx context.Context, config *runtimeapi.PodSandboxConfig, runtimeHandler string) (string, error) {
+	klog.Infof("%s [CONTINUUM] 0655 RunPodSandbox:start context=%s", time.Now().UnixNano(), ctx)
 	const operation = "run_podsandbox"
 	startTime := time.Now()
 	defer recordOperation(operation, startTime)
@@ -188,6 +190,7 @@ func (in instrumentedRuntimeService) RunPodSandbox(ctx context.Context, config *
 	if err != nil {
 		metrics.RunPodSandboxErrors.WithLabelValues(runtimeHandler).Inc()
 	}
+	klog.Infof("%s [CONTINUUM] 0656 RunPodSandbox:done context=%s", time.Now().UnixNano(), ctx)
 	return out, err
 }
 

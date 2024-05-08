@@ -160,6 +160,7 @@ func (r *remoteRuntimeService) versionV1(ctx context.Context, apiVersion string)
 func (r *remoteRuntimeService) RunPodSandbox(ctx context.Context, config *runtimeapi.PodSandboxConfig, runtimeHandler string) (string, error) {
 	// Use 2 times longer timeout for sandbox operation (4 mins by default)
 	// TODO: Make the pod sandbox timeout configurable.
+	klog.Infof("%s [CONTINUUM] 0657 RunPodSandbox:start context=%s", time.Now().UnixNano(), ctx)
 	timeout := r.timeout * 2
 
 	klog.V(10).InfoS("[RemoteRuntimeService] RunPodSandbox", "config", config, "runtimeHandler", runtimeHandler, "timeout", timeout)
@@ -187,7 +188,7 @@ func (r *remoteRuntimeService) RunPodSandbox(ctx context.Context, config *runtim
 	}
 
 	klog.V(10).InfoS("[RemoteRuntimeService] RunPodSandbox Response", "podSandboxID", podSandboxID)
-
+	klog.Infof("%s [CONTINUUM] 0658 RunPodSandbox:done context=%s id=%s", time.Now().UnixNano(), ctx, podSandboxID)
 	return podSandboxID, nil
 }
 
